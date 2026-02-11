@@ -1,12 +1,14 @@
 package handler
 
 import (
+	"encoding/json"
+
 	"gopkg.in/yaml.v3"
 )
 
-type parsedYAML struct {
-	Path string `yaml:"path"`
-	URL  string `yaml:"url"`
+type parsedQuery struct {
+	Path string `yaml:"path" json:"path"`
+	URL  string `yaml:"url" json:"url"`
 }
 
 type RedirectProvider interface {
@@ -33,21 +35,44 @@ func YAMLHandler(yamlBytes []byte) (*MapHandler, error) {
 	return &MapHandler{PathsToUrls: pathMap}, nil
 }
 
-func parseYAML(yamlBytes []byte) ([]parsedYAML, error) {
-	var pathUrls []parsedYAML
+func JSONHandler(jsonBytes []byte) (*MapHandler, error) {
+	paths, err := parseJSON(jsonBytes)
+	if err != nil {
+		return nil, err
+	}
+
+	pathMap := buildMap(paths)
+
+	return &MapHandler{PathsToUrls: pathMap}, nil
+}
+
+func parseYAML(yamlBytes []byte) ([]parsedQuery, error) {
+	var pathUrls []parsedQuery
 
 	err := yaml.Unmarshal(yamlBytes, &pathUrls)
 	if err != nil {
-		return []parsedYAML{}, err
+		return []parsedQuery{}, err
 	}
 
 	return pathUrls, nil
 }
 
-func buildMap(parsedYAMLs []parsedYAML) map[string]string {
+func parseJSON(jsonBytes []byte) ([]parsedQuery, error) {
+	var pathUrls []parsedQuery
+
+	err := json.Unmarshal(jsonBytes, &pathUrls)
+	if err != nil {
+		return []parsedQuery{}, err
+	}
+
+	return pathUrls, nil
+}
+
+func buildMap(parsedQueries []parsedQuery) map[string]string {
 	paths := make(map[string]string)
-	for _, p := range parsedYAMLs {
+	for _, p := range parsedQueries {
 		paths[p.Path] = p.URL
 	}
+
 	return paths
 }
