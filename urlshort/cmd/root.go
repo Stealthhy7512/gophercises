@@ -1,18 +1,18 @@
 package cmd
 
 import (
-	"maps"
 	"net/http"
 	"os"
 
 	"github.com/Stealthhy7512/gophercises/urlshort/handler"
 	"github.com/Stealthhy7512/gophercises/urlshort/router"
+	"github.com/Stealthhy7512/gophercises/urlshort/utils"
 	"github.com/spf13/cobra"
 )
 
 var (
-	jsonPath string = ""
-	yamlPath string = ""
+	jsonPath string
+	yamlPath string
 )
 
 var rootCmd = &cobra.Command{
@@ -47,7 +47,7 @@ var rootCmd = &cobra.Command{
 			configs = append(configs, cfg.PathsToUrls)
 		}
 
-		finalConfig := mergeMaps(configs...)
+		finalConfig := utils.MergeMaps(configs...)
 
 		r := router.SetupRouter(&handler.MapHandler{
 			PathsToUrls: finalConfig,
@@ -66,14 +66,4 @@ func Execute() {
 	if err := rootCmd.Execute(); err != nil {
 		os.Exit(1)
 	}
-}
-
-func mergeMaps(mapsToMerge ...map[string]string) map[string]string {
-	merged := make(map[string]string)
-
-	for _, m := range mapsToMerge {
-		maps.Copy(merged, m)
-	}
-
-	return merged
 }
