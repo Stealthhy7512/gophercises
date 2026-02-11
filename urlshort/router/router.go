@@ -10,14 +10,22 @@ import (
 
 type JsonResponse map[string]string
 
-func SetupRouter(yh *handler.YAMLHandler) (*chi.Mux, error) {
+func SetupRouter(p handler.RedirectProvider) *chi.Mux {
 	r := chi.NewRouter()
 
 	r.Get("/", hello)
 
-	yamlHandler, err := handler.YAMLHandler([]byte(yh))
+	r.Get("/{path}", func(w http.ResponseWriter, r *http.Request) {
+		path := r.URL.Path
+		if url, ok := p.GetURL(path); ok {
+			http.Redirect(w, r, url, http.StatusFound)
+			return
+		}
+		// http.NotFound(w, r)
+		utils.WriteJSON(w, http.StatusNotFound, JsonResponse{"error": "Not found"})
+	})
 
-	return yamlHandler, err
+	return r
 }
 
 func hello(w http.ResponseWriter, r *http.Request) {
