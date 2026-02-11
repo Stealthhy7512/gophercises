@@ -1,11 +1,5 @@
 package handler
 
-import (
-	"encoding/json"
-
-	"gopkg.in/yaml.v3"
-)
-
 type parsedQuery struct {
 	Path string `yaml:"path" json:"path"`
 	URL  string `yaml:"url" json:"url"`
@@ -24,8 +18,10 @@ func (m *MapHandler) GetURL(path string) (string, bool) {
 	return url, ok
 }
 
-func YAMLHandler(yamlBytes []byte) (*MapHandler, error) {
-	paths, err := parseYAML(yamlBytes)
+type unmarshalFunc func([]byte, any) error
+
+func QueryHandler(queryBytes []byte, fn unmarshalFunc) (*MapHandler, error) {
+	paths, err := parseQuery(queryBytes, fn)
 	if err != nil {
 		return nil, err
 	}
@@ -35,32 +31,10 @@ func YAMLHandler(yamlBytes []byte) (*MapHandler, error) {
 	return &MapHandler{PathsToUrls: pathMap}, nil
 }
 
-func JSONHandler(jsonBytes []byte) (*MapHandler, error) {
-	paths, err := parseJSON(jsonBytes)
-	if err != nil {
-		return nil, err
-	}
+func parseQuery(queryBytes []byte, fn unmarshalFunc) ([]parsedQuery, error) {
+	pathUrls := []parsedQuery{}
 
-	pathMap := buildMap(paths)
-
-	return &MapHandler{PathsToUrls: pathMap}, nil
-}
-
-func parseYAML(yamlBytes []byte) ([]parsedQuery, error) {
-	var pathUrls []parsedQuery
-
-	err := yaml.Unmarshal(yamlBytes, &pathUrls)
-	if err != nil {
-		return []parsedQuery{}, err
-	}
-
-	return pathUrls, nil
-}
-
-func parseJSON(jsonBytes []byte) ([]parsedQuery, error) {
-	var pathUrls []parsedQuery
-
-	err := json.Unmarshal(jsonBytes, &pathUrls)
+	err := fn(queryBytes, &pathUrls)
 	if err != nil {
 		return []parsedQuery{}, err
 	}
