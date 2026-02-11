@@ -3,6 +3,7 @@ package router
 import (
 	"net/http"
 
+	"github.com/Stealthhy7512/gophercises/urlshort/utils"
 	"github.com/go-chi/chi/v5"
 )
 
@@ -17,5 +18,5 @@ func SetupRouter() *chi.Mux {
 }
 
 func hello(w http.ResponseWriter, r *http.Request) {
-	WriteJSON(w, http.StatusOK, JsonResponse{"message": "Hello, world!"})
+	utils.WriteJSON(w, http.StatusOK, JsonResponse{"message": "Hello, world!"})
 }
