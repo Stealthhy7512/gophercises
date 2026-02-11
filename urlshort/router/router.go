@@ -8,8 +8,6 @@ import (
 	"github.com/go-chi/chi/v5"
 )
 
-type JsonResponse map[string]string
-
 func SetupRouter(p handler.RedirectProvider) *chi.Mux {
 	r := chi.NewRouter()
 
