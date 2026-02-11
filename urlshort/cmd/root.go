@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"encoding/json"
+	"io"
 	"net/http"
 	"os"
 
@@ -26,28 +27,36 @@ var rootCmd = &cobra.Command{
 		var configs []map[string]string
 
 		if jsonPath != "" {
-			data, err := os.ReadFile(jsonPath)
+			file, err := os.Open(jsonPath)
+			if err != nil {
+				return err
+			}
+			defer file.Close()
+
+			cfg, err := handler.QueryHandler(file, func(r io.Reader, v any) error {
+				return json.NewDecoder(r).Decode(v)
+			})
 			if err != nil {
 				return err
 			}
 
-			cfg, err := handler.QueryHandler(data, json.Unmarshal)
-			if err != nil {
-				return err
-			}
 			configs = append(configs, cfg.PathsToUrls)
 		}
 
 		if yamlPath != "" {
-			data, err := os.ReadFile(yamlPath)
+			file, err := os.Open(yamlPath)
+			if err != nil {
+				return err
+			}
+			defer file.Close()
+
+			cfg, err := handler.QueryHandler(file, func(r io.Reader, v any) error {
+				return yaml.NewDecoder(r).Decode(v)
+			})
 			if err != nil {
 				return err
 			}
 
-			cfg, err := handler.QueryHandler(data, yaml.Unmarshal)
-			if err != nil {
-				return err
-			}
 			configs = append(configs, cfg.PathsToUrls)
 		}
 

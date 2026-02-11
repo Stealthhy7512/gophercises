@@ -1,5 +1,10 @@
 package handler
 
+import (
+	"io"
+	"os"
+)
+
 type parsedQuery struct {
 	Path string `yaml:"path" json:"path"`
 	URL  string `yaml:"url" json:"url"`
@@ -18,28 +23,18 @@ func (m *MapHandler) GetURL(path string) (string, bool) {
 	return url, ok
 }
 
-type unmarshalFunc func([]byte, any) error
+type decoderFunc func(r io.Reader, v any) error
 
-func QueryHandler(queryBytes []byte, fn unmarshalFunc) (*MapHandler, error) {
-	paths, err := parseQuery(queryBytes, fn)
-	if err != nil {
+func QueryHandler(f *os.File, fn decoderFunc) (*MapHandler, error) {
+	pathUrls := []parsedQuery{}
+
+	if err := fn(f, &pathUrls); err != nil {
 		return nil, err
 	}
 
-	pathMap := buildMap(paths)
+	pathMap := buildMap(pathUrls)
 
 	return &MapHandler{PathsToUrls: pathMap}, nil
-}
-
-func parseQuery(queryBytes []byte, fn unmarshalFunc) ([]parsedQuery, error) {
-	pathUrls := []parsedQuery{}
-
-	err := fn(queryBytes, &pathUrls)
-	if err != nil {
-		return []parsedQuery{}, err
-	}
-
-	return pathUrls, nil
 }
 
 func buildMap(parsedQueries []parsedQuery) map[string]string {
