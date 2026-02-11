@@ -19,13 +19,12 @@ func SetupRouter(p handler.RedirectProvider) *chi.Mux {
 			http.Redirect(w, r, url, http.StatusFound)
 			return
 		}
-		// http.NotFound(w, r)
-		utils.WriteJSON(w, http.StatusNotFound, JsonResponse{"error": "Not found"})
+		utils.WriteJSON(w, http.StatusNotFound, utils.JsonResponse{"error": "Not found"})
 	})
 
 	return r
 }
 
 func hello(w http.ResponseWriter, r *http.Request) {
-	utils.WriteJSON(w, http.StatusOK, JsonResponse{"message": "Hello, world!"})
+	utils.WriteJSON(w, http.StatusOK, utils.JsonResponse{"message": "Hello, world!"})
 }
