@@ -18,6 +18,8 @@ type MapHandler struct {
 	PathsToUrls map[string]string
 }
 
+// GetURL checks if the given path exists in the PathsToUrls map
+// and returns the corresponding URL and a boolean indicating if it was found.
 func (m *MapHandler) GetURL(path string) (string, bool) {
 	url, ok := m.PathsToUrls[path]
 	return url, ok
@@ -25,6 +27,8 @@ func (m *MapHandler) GetURL(path string) (string, bool) {
 
 type decoderFunc func(r io.Reader, v any) error
 
+// QueryHandler reads the configuration from the provided file
+// and decodes it using the given decoder function (e.g., JSON or YAML).
 func QueryHandler(f *os.File, fn decoderFunc) (*MapHandler, error) {
 	pathUrls := []parsedQuery{}
 
@@ -37,6 +41,8 @@ func QueryHandler(f *os.File, fn decoderFunc) (*MapHandler, error) {
 	return &MapHandler{PathsToUrls: pathMap}, nil
 }
 
+// buildMap takes a slice of parsedQuery and constructs a map
+// where the keys are paths and the values are URLs.
 func buildMap(parsedQueries []parsedQuery) map[string]string {
 	paths := make(map[string]string)
 	for _, p := range parsedQueries {
