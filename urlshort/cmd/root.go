@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"maps"
 	"net/http"
 	"os"
 
@@ -16,7 +17,7 @@ var (
 
 var rootCmd = &cobra.Command{
 	Use:   "urlshort",
-	Short: "A shortened URL redirection service",
+	Short: "A shortened URL redirection service.",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		var configs []map[string]string
 
@@ -57,17 +58,22 @@ var rootCmd = &cobra.Command{
 }
 
 func init() {
-	rootCmd.Flags().StringVar(&jsonPath, "json-path", "j", "Path to JSON config")
-	rootCmd.Flags().StringVar(&yamlPath, "yaml-path", "y", "Path to YAML config")
+	rootCmd.Flags().StringVarP(&jsonPath, "json-path", "j", "", "Path to JSON config")
+	rootCmd.Flags().StringVarP(&yamlPath, "yaml-path", "y", "", "Path to YAML config")
 }
 
-func mergeMaps(maps ...map[string]string) map[string]string {
+func Execute() {
+	if err := rootCmd.Execute(); err != nil {
+		os.Exit(1)
+	}
+}
+
+func mergeMaps(mapsToMerge ...map[string]string) map[string]string {
 	merged := make(map[string]string)
 
-	for _, m := range maps {
-		for k, v := range m {
-			merged[k] = v
-		}
+	for _, m := range mapsToMerge {
+		maps.Copy(merged, m)
 	}
+
 	return merged
 }
