@@ -43,7 +43,7 @@ func (s *urlService) ShortenURL(c context.Context, longURL string) (string, erro
 		return "", err
 	}
 
-	shortCode := base62.EncodeToString(inserted.ID[:])
+	shortCode := base62.EncodeToString(inserted.ID[:4])
 
 	err = s.r.UpdateShortURL(c, inserted.ID, shortCode)
 	if err != nil {
