@@ -14,7 +14,8 @@ func SetupRouter(p handler.RedirectProvider) *chi.Mux {
 	r.Get("/", hello)
 
 	r.Get("/{path}", func(w http.ResponseWriter, r *http.Request) {
-		path := r.URL.Path
+		path := chi.URLParam(r, "path")
+
 		if url, ok := p.GetURL(path); ok {
 			http.Redirect(w, r, url, http.StatusFound)
 			return
