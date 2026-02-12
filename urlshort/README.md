@@ -1,18 +1,17 @@
 # URL Shortener
 
-This project is a URL redirection service built in Go that maps specific URL paths to target URLs. It is designed as part of the Gophercises coding exercises.
+This project is a URL shortening/redirection service built in Go that maps specific URL paths to target URLs. It is designed as part of the Gophercises coding exercises.
 
 ## Features
 
-* **Flexible Configuration**: Supports loading URL mappings from both YAML and JSON files.
-* **CLI Interface**: Built with Cobra to provide a clean command-line interface with flags for configuration paths.
-* **Dynamic Redirects**: Redirects incoming requests based on the provided mappings or returns a JSON error if the path is not found.
-* **Map Merging**: Capability to merge multiple configurations from different file sources at runtime.
+* **URL Shortening:** Encodes a given URL to 6 character codes.
+* **CLI Interface:** Built with Cobra to provide a clean command-line interface with flags for configuration paths.
+* **Dynamic Redirects:** Redirects incoming requests based on the provided mappings or returns a JSON error if the path is not found.
 
 ## Prerequisites
 
 * **Go**: version 1.24.4 or higher.
-* **Dependencies**: The project utilizes `chi` for routing, `yaml.v3` for parsing, and `cobra` for the CLI.
+* **Dependencies**: The project utilizes `chi` for routing, `base62` for encoding, `cobra` for the CLI and `mongodb` for database.
 
 ## Installation
 
@@ -25,29 +24,52 @@ This project is a URL redirection service built in Go that maps specific URL pat
 
 ## Usage
 
-You can start the redirection server by passing the path to your configuration files using CLI flags.
+Make sure to add database variables to your environment
+
+```bash
+MONGO_URI = <your_db_connection_string>
+DATABASE_NAME = <database_name>
+COLLECTION_NAME = <table_name>
+```
+
+You can start by typing:
+
+```bash
+go run main.go --help
+```
+
+**Available commands**
+
+* `serve`
+* `shorten`
 
 ### Running the Server
 
-To run the server with a YAML configuration:
+To run the server for redirections:
 
 ```bash
-go run main.go --yaml-path=cfg.yaml
+go run main.go serve
 ```
 
-To run the server with a JSON configuration:
+To run the server with a specific port:
 
 ```bash
-go run main.go --json-path=cfg.json
+go run main.go serve --port 8000
 ```
 
 The server starts on `localhost:8080` by default.
 
-### CLI Flags
+**CLI Flags**
 
-* `-y`, `--yaml-path`: Specify the path to a YAML file containing path-to-URL mappings.
+* `-p`, `--port`: Specify the port to run the server on.
 
-* `-j`, `--json-path`: Specify the path to a JSON file containing path-to-URL mappings.
+### URL Shortening
+
+To shorten a URL
+
+```bash
+go run main.go shorten [url]
+```
 
 ## API Endpoints
 
