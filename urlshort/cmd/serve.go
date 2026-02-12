@@ -24,7 +24,7 @@ var serveCmd = &cobra.Command{
 
 		client, err := mongo.Connect(options.Client().ApplyURI(cfg.URI))
 		if err != nil {
-			logger.Warn("Failed to connect to MongoDB", "error", err)
+			return err
 		}
 		defer func() {
 			if err := client.Disconnect(context.Background()); err != nil {
@@ -36,7 +36,7 @@ var serveCmd = &cobra.Command{
 		col := db.Collection(cfg.Collection)
 		repo, err := repository.NewMongoURLRepository(col)
 		if err != nil {
-			logger.Warn("Failed to create URL repository", "error", err)
+			return err
 		}
 
 		s := service.NewURLService(repo)
