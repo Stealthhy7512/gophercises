@@ -32,8 +32,9 @@ func MergeMaps(mapsToMerge ...map[string]string) map[string]string {
 }
 
 type MongoConfig struct {
-	URI      string
-	Database string
+	URI        string
+	Database   string
+	Collection string
 }
 
 func LoadMongoConfig() *MongoConfig {
@@ -42,8 +43,9 @@ func LoadMongoConfig() *MongoConfig {
 	}
 
 	return &MongoConfig{
-		URI:      getEnv("MONGO_URI"),
-		Database: getEnv("DATABASE_NAME"),
+		URI:        getEnv("MONGO_URI"),
+		Database:   getEnv("DATABASE_NAME"),
+		Collection: getEnv("COLLECTION_NAME"),
 	}
 }
 
