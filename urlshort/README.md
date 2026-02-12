@@ -1,78 +1,151 @@
 # URL Shortener
 
-This project is a URL shortening/redirection service built in Go that maps specific URL paths to target URLs. It is designed as part of the Gophercises coding exercises.
+A simple and efficient URL shortening and redirection service built in **Go**.  
+This project was developed as part of the **Gophercises** coding exercises and demonstrates clean architecture, CLI design, and database integration.
+
+---
 
 ## Features
 
-* **URL Shortening:** Encodes a given URL to 6 character codes.
-* **CLI Interface:** Built with Cobra to provide a clean command-line interface with flags for configuration paths.
-* **Dynamic Redirects:** Redirects incoming requests based on the provided mappings or returns a JSON error if the path is not found.
+* **URL Shortening**  
+  Encodes long URLs into compact 6-character Base62 short codes.
 
-## Prerequisites
+* **Redirection Service**  
+  Redirects incoming requests to their original URLs.
 
-* **Go**: version 1.24.4 or higher.
-* **Dependencies**: The project utilizes `chi` for routing, `base62` for encoding, `cobra` for the CLI and `mongodb` for database.
+* **CLI Interface**  
+  Built with Cobra for a clean and extensible command line experience.
+
+* **MongoDB Integration**  
+  Stores URL mappings persistently using MongoDB.
+
+---
+
+## Tech Stack
+
+- **Go** (1.24.4+)
+- **Chi** – HTTP router
+- **Cobra** – CLI framework
+- **MongoDB** – Database
+- **Base62** – Short code encoding
+
+---
 
 ## Installation
 
-1. Clone the repository to your local machine.
-2. Install the required dependencies:
+### 1. Clone the repository
 
-    ```bash
-    go mod download
-    ```
+### 2. Download dependencies
+
+```bash
+go mod download
+```
+
+---
+
+## Configuration
+
+Set the required environment variables before running the application.
+
+```bash
+MONGO_URI=<your_db_connection_string>
+DATABASE_NAME=<database_name>
+COLLECTION_NAME=<collection_name>
+```
+
+---
 
 ## Usage
 
-Make sure to add database variables to your environment
-
-```bash
-MONGO_URI = <your_db_connection_string>
-DATABASE_NAME = <database_name>
-COLLECTION_NAME = <table_name>
-```
-
-You can start by typing:
+To see all available commands:
 
 ```bash
 go run main.go --help
 ```
 
-**Available commands**
+### Available Commands
 
-* `serve`
-* `shorten`
+* `serve` – Start the HTTP server
+* `shorten` – Generate a shortened URL
 
-### Running the Server
+---
 
-To run the server for redirections:
+## Running the Server
+
+Start the server:
 
 ```bash
 go run main.go serve
 ```
 
-To run the server with a specific port:
+Run on a custom port:
 
 ```bash
 go run main.go serve --port 8000
 ```
 
-The server starts on `localhost:8080` by default.
+By default, the server runs on: 
 
-**CLI Flags**
+`http://localhost:8080`
 
-* `-p`, `--port`: Specify the port to run the server on.
+### CLI Flags
 
-### URL Shortening
+| Flag | Description |
+|------|------------|
+| `-p`, `--port` | Port to run the server on (default: 8080) |
 
-To shorten a URL
+---
+
+## Shortening a URL
+
+To generate a short URL:
 
 ```bash
-go run main.go shorten [url]
+go run main.go shorten https://example.com
 ```
+
+The command will output the generated short code.
+
+---
 
 ## API Endpoints
 
-* `GET /`: Returns a "Hello, world!" JSON message.
+### `GET /`
 
-* `GET /{path}`: Redirects to the mapped URL if the path exists. If the path is missing, it returns a 404 Not Found JSON response.
+Returns a simple JSON health response:
+
+```json
+{
+  "message": "Hello, world!"
+}
+```
+
+---
+
+### `GET /{shortCode}`
+
+Redirects to the original URL if the short code exists.
+
+If not found:
+
+```json
+{
+  "error": "not found"
+}
+```
+
+Status: `404 Not Found`
+
+---
+
+## Project Structure
+
+```bash
+cmd/        -> CLI commands (serve, shorten)
+handler/    -> HTTP handlers
+repository/ -> MongoDB interactions
+service/    -> Business logic
+model/      -> Data models
+```
+
+---
