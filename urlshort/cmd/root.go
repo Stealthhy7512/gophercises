@@ -7,11 +7,11 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var logger = slog.Default()
+var logger = slog.New(slog.NewTextHandler(os.Stderr, nil))
 
 var rootCmd = &cobra.Command{
-	Use:   "urlshort",
-	Short: "A shortened URL redirection service.",
+	Use:   "urlshort [command]",
+	Short: "A URL shortening and redirection service.",
 }
 
 func Execute() {
