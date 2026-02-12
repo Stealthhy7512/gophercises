@@ -2,8 +2,12 @@ package utils
 
 import (
 	"encoding/json"
+	"log/slog"
 	"maps"
 	"net/http"
+	"os"
+
+	"github.com/joho/godotenv"
 )
 
 type JsonResponse map[string]string
@@ -25,4 +29,27 @@ func MergeMaps(mapsToMerge ...map[string]string) map[string]string {
 	}
 
 	return merged
+}
+
+type MongoConfig struct {
+	URI      string
+	Database string
+}
+
+func LoadMongoConfig() *MongoConfig {
+	if err := godotenv.Load(); err != nil {
+		slog.Warn(".env file not found, using environment variables.")
+	}
+
+	return &MongoConfig{
+		URI:      getEnv("MONGO_URI"),
+		Database: getEnv("DATABASE_NAME"),
+	}
+}
+
+func getEnv(k string) string {
+	if value, ok := os.LookupEnv(k); ok {
+		return value
+	}
+	return ""
 }
