@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"context"
+	"log/slog"
 	"net/http"
 
 	"github.com/Stealthhy7512/gophercises/urlshort/handler"
@@ -26,9 +27,10 @@ var serveCmd = &cobra.Command{
 		if err != nil {
 			return err
 		}
+		slog.Debug("Connected to MongoDB")
 		defer func() {
 			if err := client.Disconnect(context.Background()); err != nil {
-				logger.Warn("Error disconnecting from MongoDB: ", "error", err)
+				slog.Error("Error disconnecting from MongoDB: ", "error", err)
 			}
 		}()
 
@@ -45,7 +47,7 @@ var serveCmd = &cobra.Command{
 		}
 
 		r := router.SetupRouter(h)
-		logger.Info("Starting server on port " + port)
+		slog.Info("Starting server", "port", port)
 
 		return http.ListenAndServe("localhost:"+port, r)
 	},

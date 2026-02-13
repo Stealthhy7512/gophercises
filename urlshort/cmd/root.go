@@ -1,13 +1,10 @@
 package cmd
 
 import (
-	"log/slog"
 	"os"
 
 	"github.com/spf13/cobra"
 )
-
-var logger = slog.New(slog.NewTextHandler(os.Stderr, nil))
 
 var rootCmd = &cobra.Command{
 	Use:   "urlshort [command]",

@@ -3,6 +3,7 @@ package cmd
 import (
 	"context"
 	"fmt"
+	"log/slog"
 
 	"github.com/Stealthhy7512/gophercises/urlshort/repository"
 	"github.com/Stealthhy7512/gophercises/urlshort/service"
@@ -27,7 +28,7 @@ var shortenCmd = &cobra.Command{
 		}
 		defer func() {
 			if err := client.Disconnect(context.Background()); err != nil {
-				logger.Warn("Error disconnecting from MongoDB: ", "error", err)
+				slog.Error("Error disconnecting from MongoDB", "error", err)
 			}
 		}()
 
@@ -48,7 +49,9 @@ var shortenCmd = &cobra.Command{
 			return err
 		}
 
-		fmt.Fprintln(cmd.OutOrStdout(), shortURL)
+		url := fmt.Sprintf("%s:%s/%s", "http://localhost", port, shortURL)
+
+		fmt.Fprintln(cmd.OutOrStdout(), url)
 		return nil
 	},
 }
